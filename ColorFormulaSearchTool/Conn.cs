@@ -11,11 +11,10 @@ namespace ColorFormulaSearchTool
         /// <returns></returns>
         public string GetConnectionString(int id)
         {
-            var strcon = string.Empty;
             //读取App.Config配置文件中的Connstring节点
             var pubs = id == 0 ? ConfigurationManager.ConnectionStrings["Connstring"] : ConfigurationManager.ConnectionStrings["ConnstringFormula"];
                         
-            strcon = pubs.ConnectionString;
+            var strcon = pubs.ConnectionString;
             return strcon;
         }
     }
