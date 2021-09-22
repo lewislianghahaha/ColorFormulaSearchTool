@@ -149,23 +149,52 @@ namespace ColorFormulaSearchTool.DB
         /// 查询色母单价(K3数据库使用)
         /// </summary>
         /// <param name="brandname">品牌</param>
-        /// <param name="createdate">创建日期</param>
-        /// <param name="changedate">修正日期</param>
+        /// <param name="creatsedt">创建日期-开始</param>
+        /// <param name="createedt">创建日期-结束</param>
+        /// <param name="changesdt">修正日期-开始</param>
+        /// <param name="changeedt">修正日期-结束</param>
         /// <returns></returns>
-        public string Get_SearchColorantPrice(string brandname,string createdate,string changedate)
+        public string Get_SearchColorantPrice(string brandname,string creatsedt, string createedt,string changesdt,string changeedt)
         {
-            if (brandname != "" && createdate != "" && changedate != "")
+            if (creatsedt != "" && createedt != "")
             {
-                _result = $@" SELECT * FROM dbo.T_BD_ColorantPrice";
-            }
-            else
-            {
-                _result = $@"
-                                SELECT * FROM dbo.T_BD_ColorantPrice a
-                                WHERE CONVERT(VARCHAR(100),A.Time,23)
+                _result = $@" SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate
+                              FROM dbo.T_BD_ColorantPrice A
+                              WHERE /*A. 
+                              AND*/ CONVERT(VARCHAR(100),A.Time,23) >='{creatsedt}'
+                              AND CONVERT(VARCHAR(100),A.Time,23) <='{createedt}'
                             ";
             }
+            else if(changesdt != "" && changeedt != "")
+            {
+                _result = $@"
+                                SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate 
+                                FROM dbo.T_BD_ColorantPrice A
+                                WHERE /*A. 
+                                AND*/ CONVERT(VARCHAR(100),A.Time,23) >='{changesdt}'
+                                AND CONVERT(VARCHAR(100),A.Time,23) <='{changeedt}'
+                            ";
+            }
+            else if (brandname == "" && creatsedt == "" && createedt == "" && changesdt == "" && changeedt == "")
+            {
+                _result = $@"SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate 
+                             FROM dbo.T_BD_ColorantPrice A";
+            }
+            return _result;
+        }
 
+        /// <summary>
+        /// 更新色母单价
+        /// </summary>
+        /// <param name="colorcode"></param>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        public string Update_ColorantPrice(string colorcode,decimal price)
+        {
+            _result = $@"
+                            UPDATE dbo.T_BD_ColorantPrice SET Price={price}
+                            where ColorCode='{colorcode}'
+                        ";
             return _result;
         }
     }
