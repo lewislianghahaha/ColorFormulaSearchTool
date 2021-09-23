@@ -10,13 +10,12 @@ namespace ColorFormulaSearchTool.Task
     public class Export
     {
         /// <summary>
-        /// 
+        /// 导出EXCEL
         /// </summary>
-        /// <param name="fileAddress"></param>
-        /// <param name="sourcedt"></param>
-        /// <param name="typeid">导入类型;0:配方点击率查询报表 1:配方单价运算报表</param>
+        /// <param name="fileAddress">导出地址</param>
+        /// <param name="sourcedt">导出数据源</param>
         /// <returns></returns>
-        public bool ExportDtToExcel(string fileAddress, DataTable sourcedt,int typeid)
+        public bool ExportDtToExcel(string fileAddress, DataTable sourcedt)
         {
             var result = true;
             var sheetcount = 0; //记录所需的sheet页总数
@@ -67,30 +66,19 @@ namespace ColorFormulaSearchTool.Task
                                 //在前两位设置为字符串类型,后面的都是设置小数类型
                                 //(注:要注意值小数位数保留两位;当超出三位小数的时候,会出现OutofMemory异常.)
 
-                                var a=sourcedt.Rows[r][k].GetType();   //todo:检测数据列的数据类型
+                                //检测数据列的数据类型
+                                var colType = sourcedt.Columns[k].DataType;
 
-                                //配方点击率查询报表
-                                switch (typeid)
+                                switch (colType.Name)
                                 {
-                                    case 0:
-                                        if (k == 8)
-                                        {
-                                            row.CreateCell(k, CellType.Numeric).SetCellValue(Convert.ToInt32(sourcedt.Rows[r][k]));
-                                        }
-                                        else
-                                        {
-                                            row.CreateCell(k, CellType.String).SetCellValue(Convert.ToString(sourcedt.Rows[r][k]));
-                                        }
+                                    case "Decimal":
+                                        row.CreateCell(k, CellType.Numeric).SetCellValue(Math.Round(Convert.ToDouble(sourcedt.Rows[r][k]), 2));
+                                        break;
+                                    case "Int32":
+                                        row.CreateCell(k, CellType.Numeric).SetCellValue(Convert.ToInt32(sourcedt.Rows[r][k]));
                                         break;
                                     default:
-                                        if (k == 5 || k == 6 || k == 7)
-                                        {
-                                            row.CreateCell(k, CellType.Numeric).SetCellValue(Math.Round(Convert.ToDouble(sourcedt.Rows[r][k]), 2));
-                                        }
-                                        else
-                                        {
-                                            row.CreateCell(k, CellType.String).SetCellValue(Convert.ToString(sourcedt.Rows[r][k]));
-                                        }
+                                        row.CreateCell(k, CellType.String).SetCellValue(Convert.ToString(sourcedt.Rows[r][k]));
                                         break;
                                 }
                             }

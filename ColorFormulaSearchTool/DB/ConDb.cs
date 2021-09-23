@@ -10,6 +10,16 @@ namespace ColorFormulaSearchTool.DB
         Conn conn=new Conn();
 
         /// <summary>
+        /// 获取数据库连接字符串
+        /// </summary>
+        /// <param name="typeid">0:连接K3数据库 1:连接配方数据库</param>
+        /// <returns></returns>
+        public string GetConnString(int typeid)
+        {
+            return conn.GetConnectionString(typeid);
+        }
+
+        /// <summary>
         /// 获取数据连接
         /// </summary>
         /// <param name="id">0:连接K3数据库 1:连接配方数据库</param>
@@ -28,7 +38,7 @@ namespace ColorFormulaSearchTool.DB
         /// <returns></returns>
         public DataTable UseSqlSearchInfo(int type,string sqlscript)
         {
-            var resultdt=new DataTable();
+            var resultdt = new DataTable();
 
             try
             {

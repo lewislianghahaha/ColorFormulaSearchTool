@@ -5,11 +5,9 @@ namespace ColorFormulaSearchTool.Task
     //任务分布(中转站)
     public class TaskLogic
     {
-        Search search = new Search();      //查询
-        Import import=new Import();        //导入
-        Export export=new Export();        //导出
-        Update update=new Update();        //更新
-        Generate generate=new Generate();  //生成
+        Search search = new Search();        //查询
+        Export export = new Export();        //导出
+        Generate generate = new Generate();  //生成
 
         #region 变量定义
 
@@ -35,14 +33,12 @@ namespace ColorFormulaSearchTool.Task
 
         #region 导出EXCEL
         private DataTable _exportdt;             //获取Dt记录集(用于导出至EXCEL)
-        private int _typeid;                     //导入类型;0:配方点击率查询报表 1:配方单价运算报表
         #endregion
 
 
         #endregion
 
         #region Set
-
         /// <summary>
         /// 开始日期
         /// </summary>
@@ -71,10 +67,6 @@ namespace ColorFormulaSearchTool.Task
         /// 获取Dt记录集(用于导出至EXCEL)
         /// </summary>
         public DataTable Exportdt { set { _exportdt = value; } }
-        /// <summary>
-        /// 导入类型;0:配方点击率查询报表 1:配方单价运算报表
-        /// </summary>
-        public int Typeid { set { _typeid = value; } }
         #endregion
 
         #region Get
@@ -100,7 +92,7 @@ namespace ColorFormulaSearchTool.Task
                 _resultTable.Rows.Clear();
                 _resultTable.Columns.Clear();
             }
-            _resultTable = search.SearchColorantPriceList();
+            _resultTable = search.SearchColorantPriceList().Copy();
         }
 
         /// <summary>
@@ -114,7 +106,7 @@ namespace ColorFormulaSearchTool.Task
                 _resultTable.Rows.Clear();
                 _resultTable.Columns.Clear();
             }
-            _resultTable = search.SearchColorCodeClick(_sdt,_edt,_brandname,_colorantcode);
+            _resultTable = search.SearchColorCodeClick(_sdt,_edt,_brandname,_colorantcode).Copy();
         }
 
         /// <summary>
@@ -128,7 +120,7 @@ namespace ColorFormulaSearchTool.Task
                 _resultTable.Rows.Clear();
                 _resultTable.Columns.Clear();
             }
-            _resultTable = generate.GenerateColorantPrice(_fileAddress,_colorantPriceList);
+            _resultTable = generate.GenerateColorantPrice(_fileAddress,_colorantPriceList).Copy();
         }
 
         /// <summary>
@@ -136,7 +128,25 @@ namespace ColorFormulaSearchTool.Task
         /// </summary>
         public void ExportDtToExcel()
         {
-            _resultMark = export.ExportDtToExcel(_fileAddress, _exportdt, _typeid);
+            _resultMark = export.ExportDtToExcel(_fileAddress, _exportdt);
         }
+
+        /// <summary>
+        /// 导入‘色母单价’列表
+        /// </summary>
+        public void ImportColorantPriceList()
+        {
+            //若_resultTable有值,即先将其清空,再进行赋值
+            if (_resultTable?.Rows.Count > 0)
+            {
+                _resultTable.Rows.Clear();
+                _resultTable.Columns.Clear();
+            }
+            _resultTable = generate.UpColorantPriceList(_fileAddress, _colorantPriceList).Copy();
+            //通过返回的DT判断_resultMark是否成功导入
+            _resultMark = _resultTable?.Rows.Count > 0;
+        }
+
+
     }
 }

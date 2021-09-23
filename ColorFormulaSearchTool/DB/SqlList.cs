@@ -184,16 +184,32 @@ namespace ColorFormulaSearchTool.DB
         }
 
         /// <summary>
-        /// 更新色母单价
+        /// 批量更新
         /// </summary>
-        /// <param name="colorcode"></param>
-        /// <param name="price"></param>
+        /// <param name="tablename"></param>
         /// <returns></returns>
-        public string Update_ColorantPrice(string colorcode,decimal price)
+        public string UpEntry(string tablename)
+        {
+            switch (tablename)
+            {
+                case "T_BD_ColorantPrice":
+                    _result = @"UPDATE dbo.T_BD_ColorantPrice SET ColorCode=@ColorCode,Price=@Price,CreateDate=@CreateDate,ChangeDate=@ChangeDate
+                                WHERE PID=@PID";
+                    break;
+            }
+            return _result;
+        }
+
+        /// <summary>
+        /// 根据表名获取查询表体语句(更新时使用) 只显示TOP 1记录
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public string SearchUpdateTable(string tableName)
         {
             _result = $@"
-                            UPDATE dbo.T_BD_ColorantPrice SET Price={price}
-                            where ColorCode='{colorcode}'
+                          SELECT Top 1 a.*
+                          FROM {tableName} a
                         ";
             return _result;
         }

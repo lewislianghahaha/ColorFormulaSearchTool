@@ -168,7 +168,6 @@ namespace ColorFormulaSearchTool.UI
                 //相关参数赋值
                 taskLogic.FileAddress = fileAdd;
                 taskLogic.Exportdt = _dtl;
-                //todo:taskLogic.Typeid = 1;
 
                 //子线程调用
                 new Thread(ExportReport).Start();
@@ -204,7 +203,10 @@ namespace ColorFormulaSearchTool.UI
         private void TmchangeColorant_Click(object sender, EventArgs e)
         {
             var colorantpriceFrm = new ColorantPriceFrm{ StartPosition = FormStartPosition.CenterScreen };
+            colorantpriceFrm.ColorantPriceList = _colorantprice;
             colorantpriceFrm.ShowDialog();
+            //todo:返回后将要获取最新‘色母单价’记录
+
         }
 
         #region 子线程使用
@@ -251,6 +253,8 @@ namespace ColorFormulaSearchTool.UI
                 load.Close();
             }));
         }
+
+
         #endregion
 
         #region 导航栏使用
