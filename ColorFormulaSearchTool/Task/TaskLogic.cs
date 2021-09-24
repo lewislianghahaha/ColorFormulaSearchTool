@@ -35,6 +35,12 @@ namespace ColorFormulaSearchTool.Task
         private DataTable _exportdt;             //获取Dt记录集(用于导出至EXCEL)
         #endregion
 
+        #region 色母单价窗体查询
+        private string _bname;                   //品牌名称(简称)
+        private string _startdt;                 //开始日期
+        private string _enddt;                   //结束日期
+        private int _typeid;                     //选择类型(决定是使用‘创建日期’或‘修改日期’进行查询)
+        #endregion
 
         #endregion
 
@@ -67,6 +73,23 @@ namespace ColorFormulaSearchTool.Task
         /// 获取Dt记录集(用于导出至EXCEL)
         /// </summary>
         public DataTable Exportdt { set { _exportdt = value; } }
+
+        /// <summary>
+        /// 品牌名称(简称)
+        /// </summary>
+        public string Bname { set { _bname = value; } }
+        /// <summary>
+        /// 开始日期
+        /// </summary>
+        public string Startdt { set { _startdt = value; } }
+        /// <summary>
+        /// 结束日期
+        /// </summary>
+        public string Enddt { set { _enddt = value; } }
+        /// <summary>
+        /// 选择类型(决定是使用‘创建日期’或‘修改日期’进行查询)
+        /// </summary>
+        public int Typeid { set { _typeid = value; } }
         #endregion
 
         #region Get
@@ -147,6 +170,18 @@ namespace ColorFormulaSearchTool.Task
             _resultMark = _resultTable?.Rows.Count > 0;
         }
 
-
+        /// <summary>
+        /// 色母单价列表窗体查询使用
+        /// </summary>
+        public void SearchColorantPrice()
+        {
+            //若_resultTable有值,即先将其清空,再进行赋值
+            if (_resultTable?.Rows.Count > 0)
+            {
+                _resultTable.Rows.Clear();
+                _resultTable.Columns.Clear();
+            }
+            _resultTable = search.SearchColorantPrice(_brandname,_startdt,_enddt,_typeid).Copy();
+        }
     }
 }

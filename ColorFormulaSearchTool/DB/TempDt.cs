@@ -87,6 +87,89 @@ namespace ColorFormulaSearchTool.DB
         }
 
         /// <summary>
+        /// 色母单价临时表(插入使用)
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ColorantPriceInsertTempDt()
+        {
+            var dt=new DataTable();
+
+            for (var i = 0; i < 4; i++)
+            {
+                var dc = new DataColumn();
+
+                switch (i)
+                {
+                    //ColorCode
+                    case 0:
+                        dc.ColumnName = "ColorCode";
+                        dc.DataType = Type.GetType("System.String");
+                        break;
+                    //Price
+                    case 1:
+                        dc.ColumnName = "Price";
+                        dc.DataType = Type.GetType("System.Decimal");
+                        break;
+                    //CreateDate
+                    case 2:
+                        dc.ColumnName = "CreateDate";
+                        dc.DataType = Type.GetType("System.DateTime"); 
+                        break;
+                    //ChangeDate
+                    case 3:
+                        dc.ColumnName = "ChangeDate";
+                        dc.DataType = Type.GetType("System.DateTime");
+                        break;
+                }
+            }
+            return dt;
+        }
+
+        /// <summary>
+        /// 色母单价临时表(更新使用)
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ColorantPriceUpTempDt()
+        {
+            var dt = new DataTable();
+
+            for (var i = 0; i < 5; i++)
+            {
+                var dc = new DataColumn();
+
+                switch (i)
+                {
+                    //Pid
+                    case 0:
+                        dc.ColumnName = "Pid";
+                        dc.DataType = Type.GetType("System.Int32"); 
+                        break;
+                    //ColorCode
+                    case 1:
+                        dc.ColumnName = "ColorCode";
+                        dc.DataType = Type.GetType("System.String");
+                        break;
+                    //Price
+                    case 2:
+                        dc.ColumnName = "Price";
+                        dc.DataType = Type.GetType("System.Decimal");
+                        break;
+                    //CreateDate
+                    case 3:
+                        dc.ColumnName = "CreateDate";
+                        dc.DataType = Type.GetType("System.DateTime");
+                        break;
+                    //ChangeDate
+                    case 4:
+                        dc.ColumnName = "ChangeDate";
+                        dc.DataType = Type.GetType("System.DateTime");
+                        break;
+                }
+            }
+            return dt;
+        }
+
+        /// <summary>
         /// 导出模板
         /// </summary>
         /// <param name="id">0:导出“配方点击率查询报表” 1:“配方单价运算报表”</param>
@@ -141,12 +224,12 @@ namespace ColorFormulaSearchTool.DB
                         //版本日期
                         case 7:
                             dc.ColumnName = "版本日期";
-                            dc.DataType = Type.GetType("System.DateTime"); 
+                            dc.DataType = Type.GetType("System.DateTime");
                             break;
                         //点击次数
                         case 8:
                             dc.ColumnName = "点击次数";
-                            dc.DataType = Type.GetType("System.Int32"); 
+                            dc.DataType = Type.GetType("System.Int32");
                             break;
                     }
                     dt.Columns.Add(dc);

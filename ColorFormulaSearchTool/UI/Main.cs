@@ -94,23 +94,52 @@ namespace ColorFormulaSearchTool.UI
         /// <param name="e"></param>
         private void Tmreport1_Click(object sender, EventArgs e)
         {
+            //显示查询条件信息变量
+            var message = string.Empty;
+
             try
             {
+                //若查询条件信息存在,即先将其清空
+                if (lbmessage.Text != "")
+                    lbmessage.Text = "";
+
                 //弹出查询窗体
                 var searchFrm = new SearchFrm { StartPosition = FormStartPosition.CenterScreen };
                 searchFrm.ShowDialog();
 
                 //获取选择的字段并执行查询
-                taskLogic.Sdt = searchFrm.Sdt;
-                taskLogic.Edt = searchFrm.Edt;
-                taskLogic.BrandName = searchFrm.Brandname;
-                taskLogic.ColorantCode = searchFrm.ColorantCode;
+                taskLogic.Sdt = searchFrm.Sdt;                    //开始日期
+                taskLogic.Edt = searchFrm.Edt;                    //结果日期
+                taskLogic.BrandName = searchFrm.Brandname;        //品牌
+                taskLogic.ColorantCode = searchFrm.ColorantCode;  //色母编码
+
+                //信息提示补充
+                if (searchFrm.Brandname != "" && searchFrm.ColorantCode !="")
+                {
+                    message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
+                                                           品牌:{searchFrm.Brandname},色母编码:{searchFrm.ColorantCode}";
+                }
+                else if (searchFrm.Brandname != "" && searchFrm.ColorantCode == "")
+                {
+                    message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
+                                                           品牌:{searchFrm.Brandname}";
+                }
+                else if (searchFrm.Brandname == "" && searchFrm.ColorantCode != "")
+                {
+                    message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
+                                                           色母编码:{searchFrm.ColorantCode}";
+                }
+                else if (searchFrm.Brandname == "" && searchFrm.ColorantCode == "")
+                {
+                    message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt}";
+                }
 
                 //子线程调用
                 new Thread(SearchColorCodeClick).Start();
                 load.StartPosition = FormStartPosition.CenterScreen;
                 load.ShowDialog();
-
+                //显示查询条件信息
+                lbmessage.Text = message;
                 //跳转并进行显示
                 OnSearch(taskLogic.ResultTable);
             }
@@ -205,8 +234,8 @@ namespace ColorFormulaSearchTool.UI
             var colorantpriceFrm = new ColorantPriceFrm{ StartPosition = FormStartPosition.CenterScreen };
             colorantpriceFrm.ColorantPriceList = _colorantprice;
             colorantpriceFrm.ShowDialog();
-            //todo:返回后将要获取最新‘色母单价’记录
-
+            //返回后将要获取最新‘色母单价’记录
+            _colorantprice = colorantpriceFrm.Newcolorantpricelist.Copy();
         }
 
         #region 子线程使用

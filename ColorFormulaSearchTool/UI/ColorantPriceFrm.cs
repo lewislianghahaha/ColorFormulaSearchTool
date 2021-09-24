@@ -25,6 +25,8 @@ namespace ColorFormulaSearchTool.UI
         private DataTable _colorantpricelist;
         //返回最新‘色母单价’列表
         private DataTable _newcolorantpricelist;
+        //类型,0:查询时使用,1:导入色母单价时使用 注:若为0,即不将_dtl赋值给_newcolorantpricelist
+        private int _typeid;
         #endregion
 
         #region Set
@@ -72,6 +74,8 @@ namespace ColorFormulaSearchTool.UI
         {
             //初始化‘色母单价’列表
             OnSearch(_colorantpricelist);
+            //初始化查询下拉列表
+            OnShowSelectList();
         }
 
         /// <summary>
@@ -82,6 +86,11 @@ namespace ColorFormulaSearchTool.UI
             if (sourcedt.Rows.Count > 0)
             {
                 _dtl = sourcedt.Copy();
+                //接收最新‘色母单价’记录至输出临时表内;注:当为查询时不用执行
+                if (_typeid == 1)
+                {
+                    _newcolorantpricelist = _dtl.Copy();
+                }
                 panel1.Visible = true;
                 //初始化下拉框所选择的默认值
                 tmshowrows.SelectedItem = Convert.ToInt32(tmshowrows.SelectedItem) == 0
@@ -98,6 +107,53 @@ namespace ColorFormulaSearchTool.UI
                 gvdtl.DataSource = sourcedt.Clone();
                 panel1.Visible = false;
             }
+            //控制GridView单元格显示方式
+            ControlGridViewisShow();
+        }
+
+        /// <summary>
+        /// 初始化查询下拉列表
+        /// </summary>
+        private void OnShowSelectList()
+        {
+            var dt=new DataTable();
+
+            //创建表头
+            for (var i = 0; i < 2; i++)
+            {
+                var dc = new DataColumn();
+                switch (i)
+                {
+                    case 0:
+                        dc.ColumnName = "Id";
+                        break;
+                    case 1:
+                        dc.ColumnName = "Name";
+                        break;
+                }
+                dt.Columns.Add(dc);
+            }
+
+            //创建行内容
+            for (var i = 0; i < 2; i++)
+            {
+                var dr = dt.NewRow();
+                switch (i)
+                {
+                    case 0:
+                        dr[0] = 0;
+                        dr[1] = "创建日期";
+                        break;
+                    case 1:
+                        dr[0] = 1;
+                        dr[1] = "修改日期";
+                        break;
+                }
+                dt.Rows.Add(dr);
+            }
+            comselectvalue.DataSource = dt;
+            comselectvalue.DisplayMember = "Name"; //设置显示值
+            comselectvalue.ValueMember = "Id";     //设置默认值内码
         }
 
         /// <summary>
@@ -125,8 +181,8 @@ namespace ColorFormulaSearchTool.UI
                 else
                 {
                     MessageBox.Show($"导入成功,按确定后进行刷新操作.",$"成功",MessageBoxButtons.OK,MessageBoxIcon.Information);
+                    _typeid = 1;
                     OnSearch(taskLogic.ResultTable);
-                    _dtl = taskLogic.ResultTable;
                 }
             }
             catch (Exception ex)
@@ -148,8 +204,21 @@ namespace ColorFormulaSearchTool.UI
         {
             try
             {
-                //
+                //获取各变量相关值
+                taskLogic.Bname=txtbrandname.Text;//品牌
+                taskLogic.Startdt = dtstd.Value.ToString("yyyy-MM-dd"); //开始日期
+                taskLogic.Enddt = dtend.Value.ToString("yyyy-MM-dd");   //结束日期
 
+                var dvordertylelist = (DataRowView)comselectvalue.Items[comselectvalue.SelectedIndex];
+                taskLogic.Typeid = Convert.ToInt32(dvordertylelist["Id"]); //选择类型(决定是使用‘创建日期’或‘修改日期’进行查询) 0:创建日期 1:修改日期
+
+                //子线程调用
+                new Thread(SearchColorantPrice).Start();
+                load.StartPosition = FormStartPosition.CenterScreen;
+                load.ShowDialog();
+
+                _typeid = 0;
+                OnSearch(taskLogic.ResultTable);
             }
             catch (Exception ex)
             {
@@ -166,6 +235,16 @@ namespace ColorFormulaSearchTool.UI
         {
 
             this.Close();
+        }
+
+        /// <summary>
+        /// 控制GridView单元格显示方式
+        /// </summary>
+        private void ControlGridViewisShow()
+        {
+            //注:当没有值时,若还设置某一行Row不显示的话,就会出现异常
+            if (gvdtl?.Rows.Count >= 0)
+                gvdtl.Columns[0].Visible = false;
         }
 
         #region 子线程调用
@@ -185,6 +264,17 @@ namespace ColorFormulaSearchTool.UI
             }));
         }
 
+        private void SearchColorantPrice()
+        {
+            //更新色母单价列表
+            taskLogic.SearchColorantPrice();
+
+            //当完成后Load子窗体关闭
+            this.Invoke((ThreadStart)(() =>
+            {
+                load.Close();
+            }));
+        }
 
         #endregion
 

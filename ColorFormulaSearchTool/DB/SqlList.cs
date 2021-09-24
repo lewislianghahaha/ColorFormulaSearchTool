@@ -149,35 +149,35 @@ namespace ColorFormulaSearchTool.DB
         /// 查询色母单价(K3数据库使用)
         /// </summary>
         /// <param name="brandname">品牌</param>
-        /// <param name="creatsedt">创建日期-开始</param>
-        /// <param name="createedt">创建日期-结束</param>
-        /// <param name="changesdt">修正日期-开始</param>
-        /// <param name="changeedt">修正日期-结束</param>
+        /// <param name="sdt">日期开始</param>
+        /// <param name="edt">日期结束</param>
+        /// <param name="typeid">选择类型(决定是使用‘创建日期’或‘修改日期’进行查询) 0:创建日期 1:修改日期</param>
         /// <returns></returns>
-        public string Get_SearchColorantPrice(string brandname,string creatsedt, string createedt,string changesdt,string changeedt)
+        public string Get_SearchColorantPrice(string brandname,string sdt, string edt, int typeid)
         {
-            if (creatsedt != "" && createedt != "")
+            //色母单价窗体查询时使用
+            if (typeid == 0)
             {
-                _result = $@" SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate
+                _result = $@" SELECT A.Pid,A.ColorantCode 色母编码,A.Price 色母单价,A.CreateDate 创建日期,A.ChangeDate 修改日期
                               FROM dbo.T_BD_ColorantPrice A
-                              WHERE /*A. 
-                              AND*/ CONVERT(VARCHAR(100),A.Time,23) >='{creatsedt}'
-                              AND CONVERT(VARCHAR(100),A.Time,23) <='{createedt}'
+                              WHERE (SUBSTRING(A.ColorCode,0,3)='{brandname}' or '{brandname}'='')  --品牌
+                              AND CONVERT(VARCHAR(100),A.CreateDate,23) >='{sdt}'
+                              AND CONVERT(VARCHAR(100),A.CreateDate,23) <='{edt}'
                             ";
             }
-            else if(changesdt != "" && changeedt != "")
+            else if (typeid == 1)
             {
-                _result = $@"
-                                SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate 
-                                FROM dbo.T_BD_ColorantPrice A
-                                WHERE /*A. 
-                                AND*/ CONVERT(VARCHAR(100),A.Time,23) >='{changesdt}'
-                                AND CONVERT(VARCHAR(100),A.Time,23) <='{changeedt}'
+                _result = $@" SELECT A.Pid,A.ColorantCode 色母编码,A.Price 色母单价,A.CreateDate 创建日期,A.ChangeDate 修改日期
+                              FROM dbo.T_BD_ColorantPrice A
+                              WHERE (SUBSTRING(A.ColorCode,0,3)='{brandname}' or '{brandname}'='')  --品牌
+                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) >='{sdt}'
+                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) <='{edt}'
                             ";
             }
-            else if (brandname == "" && creatsedt == "" && createedt == "" && changesdt == "" && changeedt == "")
+            //初始化及更新(插入)后使用
+            else if (brandname == "" && sdt == "" && edt == "")
             {
-                _result = $@"SELECT A.ColorCode,A.Price,A.CreateDate,A.ChangeDate 
+                _result = $@"SELECT A.Pid,A.ColorantCode,A.Price,A.CreateDate,A.ChangeDate 
                              FROM dbo.T_BD_ColorantPrice A";
             }
             return _result;
@@ -193,7 +193,7 @@ namespace ColorFormulaSearchTool.DB
             switch (tablename)
             {
                 case "T_BD_ColorantPrice":
-                    _result = @"UPDATE dbo.T_BD_ColorantPrice SET ColorCode=@ColorCode,Price=@Price,CreateDate=@CreateDate,ChangeDate=@ChangeDate
+                    _result = @"UPDATE dbo.T_BD_ColorantPrice SET ColorantCode=@ColorantCode,Price=@Price,CreateDate=@CreateDate,ChangeDate=@ChangeDate
                                 WHERE PID=@PID";
                     break;
             }

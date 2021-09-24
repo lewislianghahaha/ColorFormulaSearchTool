@@ -7,8 +7,6 @@ namespace ColorFormulaSearchTool.DB
     //数据库连接  查询语句公共方法 及 更新删除公共方法
     public class ConDb
     {
-        Conn conn=new Conn();
-
         /// <summary>
         /// 获取数据库连接字符串
         /// </summary>
@@ -16,6 +14,7 @@ namespace ColorFormulaSearchTool.DB
         /// <returns></returns>
         public string GetConnString(int typeid)
         {
+            var conn = new Conn();
             return conn.GetConnectionString(typeid);
         }
 
@@ -26,6 +25,7 @@ namespace ColorFormulaSearchTool.DB
         /// <returns></returns>
         public SqlConnection GetConn(int id)
         {
+            var conn = new Conn();
             var sqlcon = new SqlConnection(conn.GetConnectionString(id));
             return sqlcon;
         }
