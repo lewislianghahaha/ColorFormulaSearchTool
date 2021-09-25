@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.Menu = new System.Windows.Forms.MenuStrip();
+            this.tmclose = new System.Windows.Forms.ToolStripMenuItem();
             this.dtedt = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
             this.dtsdt = new System.Windows.Forms.DateTimePicker();
@@ -38,7 +39,7 @@
             this.txtcolorant = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnsearch = new System.Windows.Forms.Button();
-            this.tmclose = new System.Windows.Forms.ToolStripMenuItem();
+            this.label5 = new System.Windows.Forms.Label();
             this.Menu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +53,12 @@
             this.Menu.Size = new System.Drawing.Size(328, 25);
             this.Menu.TabIndex = 0;
             this.Menu.Text = "menuStrip1";
+            // 
+            // tmclose
+            // 
+            this.tmclose.Name = "tmclose";
+            this.tmclose.Size = new System.Drawing.Size(44, 21);
+            this.tmclose.Text = "关闭";
             // 
             // dtedt
             // 
@@ -126,11 +133,14 @@
             this.btnsearch.Text = "查询";
             this.btnsearch.UseVisualStyleBackColor = true;
             // 
-            // tmclose
+            // label5
             // 
-            this.tmclose.Name = "tmclose";
-            this.tmclose.Size = new System.Drawing.Size(44, 21);
-            this.tmclose.Text = "关闭";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(213, 76);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(89, 12);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "请输入品牌全称";
             // 
             // SearchFrm
             // 
@@ -139,6 +149,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(328, 159);
             this.ControlBox = false;
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.btnsearch);
             this.Controls.Add(this.txtcolorant);
             this.Controls.Add(this.label4);
@@ -172,5 +183,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnsearch;
         private System.Windows.Forms.ToolStripMenuItem tmclose;
+        private System.Windows.Forms.Label label5;
     }
 }

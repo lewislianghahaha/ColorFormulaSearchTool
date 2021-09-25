@@ -11,6 +11,8 @@ namespace ColorFormulaSearchTool.Task
     //导入
     public class Import
     {
+        TempDt tempDt = new TempDt();
+
         /// <summary>
         /// 导入Excel
         /// </summary>
@@ -44,11 +46,9 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         private DataTable OpenExcelToDataTable(int typeid, string fileAddress)
         {
-            var _tempDt = new TempDt();
-
             IWorkbook wk;
             //获取动态生成绑定字段临时表
-            var dt = typeid == 0 ? _tempDt.ImportTempdt() : _tempDt.ImportPriceList();
+            var dt = typeid == 0 ? tempDt.ImportTempdt() : tempDt.ImportPriceList();
 
             using (var fsRead = File.OpenRead(fileAddress))
             {

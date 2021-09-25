@@ -66,6 +66,10 @@ namespace ColorFormulaSearchTool.UI
         /// <param name="e"></param>
         private void Tmclose_Click(object sender, EventArgs e)
         {
+            _sdt = "";
+            _edt = "";
+            _brandname = "";
+            _colorantcode = "";
             this.Close();
         }
     }

@@ -8,10 +8,11 @@ namespace ColorFormulaSearchTool.Task
     //运算(配方单价运算报表使用)
     public class Generate
     {
-        ConDb conDb=new ConDb();
-        SqlList sqlList=new SqlList();
-        TempDt tempDt=new TempDt();
-        Search search=new Search();
+        ConDb conDb = new ConDb();
+        SqlList sqlList = new SqlList();
+        TempDt tempDt = new TempDt();
+        Search search = new Search();
+        Import import = new Import();
 
         /// <summary>
         /// 配方点击率查询报表-将得出的结果转换类型使用
@@ -20,13 +21,16 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         public DataTable GenerateColorcodeClickPoint(DataTable sourcedt)
         {
+            var a = sourcedt;
             var dt = tempDt.ExportDt(0);
             //批量数据移植
             for (var i = 0; i < sourcedt.Rows.Count; i++)
             {
+               
                 var newrow = dt.NewRow();
                 for (var j = 0; j < sourcedt.Columns.Count; j++)
                 {
+                    var a1 = sourcedt.Rows[i][j];
                     dt.Rows[i][j] = sourcedt.Rows[i][j];
                 }
                 dt.Rows.Add(newrow);
@@ -42,7 +46,6 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         public DataTable GenerateColorantPrice(string fileAdd,DataTable colorantPriceList)
         {
-            var import = new Import();
             var dt = new DataTable();
             //色母编码(中间变量)
             var oldcolorcode = string.Empty;
@@ -160,7 +163,6 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         public DataTable UpColorantPriceList(string fileAdd, DataTable colorantPriceList)
         {
-            var import = new Import();
             var dt = new DataTable();
 
             try
