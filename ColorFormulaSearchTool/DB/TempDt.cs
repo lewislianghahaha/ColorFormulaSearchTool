@@ -87,51 +87,12 @@ namespace ColorFormulaSearchTool.DB
         }
 
         /// <summary>
-        /// 色母单价临时表(插入使用)
+        /// 色母单价临时表(插入或更新使用)
         /// </summary>
         /// <returns></returns>
-        public DataTable ColorantPriceInsertTempDt()
+        public DataTable ColorantPriceInsertOrUpTempDt()
         {
             var dt=new DataTable();
-
-            for (var i = 0; i < 4; i++)
-            {
-                var dc = new DataColumn();
-
-                switch (i)
-                {
-                    //ColorCode
-                    case 0:
-                        dc.ColumnName = "ColorCode";
-                        dc.DataType = Type.GetType("System.String");
-                        break;
-                    //Price
-                    case 1:
-                        dc.ColumnName = "Price";
-                        dc.DataType = Type.GetType("System.Decimal");
-                        break;
-                    //CreateDate
-                    case 2:
-                        dc.ColumnName = "CreateDate";
-                        dc.DataType = Type.GetType("System.DateTime"); 
-                        break;
-                    //ChangeDate
-                    case 3:
-                        dc.ColumnName = "ChangeDate";
-                        dc.DataType = Type.GetType("System.DateTime");
-                        break;
-                }
-            }
-            return dt;
-        }
-
-        /// <summary>
-        /// 色母单价临时表(更新使用)
-        /// </summary>
-        /// <returns></returns>
-        public DataTable ColorantPriceUpTempDt()
-        {
-            var dt = new DataTable();
 
             for (var i = 0; i < 5; i++)
             {
@@ -142,11 +103,11 @@ namespace ColorFormulaSearchTool.DB
                     //Pid
                     case 0:
                         dc.ColumnName = "Pid";
-                        dc.DataType = Type.GetType("System.Int32"); 
+                        dc.DataType = Type.GetType("System.Int32");
                         break;
                     //ColorCode
                     case 1:
-                        dc.ColumnName = "ColorCode";
+                        dc.ColumnName = "ColorantCode";
                         dc.DataType = Type.GetType("System.String");
                         break;
                     //Price
@@ -165,6 +126,7 @@ namespace ColorFormulaSearchTool.DB
                         dc.DataType = Type.GetType("System.DateTime");
                         break;
                 }
+                dt.Columns.Add(dc);
             }
             return dt;
         }

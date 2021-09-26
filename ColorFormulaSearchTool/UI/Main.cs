@@ -119,18 +119,15 @@ namespace ColorFormulaSearchTool.UI
                     //信息提示补充
                     if (searchFrm.Brandname != "" && searchFrm.ColorantCode != "")
                     {
-                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
-                                                           品牌:{searchFrm.Brandname},色母编码:{searchFrm.ColorantCode}";
+                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},品牌:{searchFrm.Brandname},色母编码:{searchFrm.ColorantCode}";
                     }
                     else if (searchFrm.Brandname != "" && searchFrm.ColorantCode == "")
                     {
-                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
-                                                           品牌:{searchFrm.Brandname}";
+                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},品牌:{searchFrm.Brandname}";
                     }
                     else if (searchFrm.Brandname == "" && searchFrm.ColorantCode != "")
                     {
-                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},
-                                                           色母编码:{searchFrm.ColorantCode}";
+                        message = $@"‘配方点击率查询报表’查询条件:开始日期:{searchFrm.Sdt},结束日期:{searchFrm.Edt},色母编码:{searchFrm.ColorantCode}";
                     }
                     else if (searchFrm.Brandname == "" && searchFrm.ColorantCode == "")
                     {
@@ -216,14 +213,20 @@ namespace ColorFormulaSearchTool.UI
                     dt.Rows.Clear();
                     dt.Columns.Clear();
                     gvdtl.DataSource = dt;
+                    lbmessage.Text = "";
                 }
             }
             catch (Exception ex)
             {
-                var dt = (DataTable)gvdtl.DataSource;
-                dt.Rows.Clear();
-                dt.Columns.Clear();
-                gvdtl.DataSource = dt;
+                //当出现异常时,对所有输出项进行清空数据操作(注:虽有值才能执行清空操作)
+                if (gvdtl.Rows.Count > 0)
+                {
+                    var dt = (DataTable)gvdtl.DataSource;
+                    dt.Rows.Clear();
+                    dt.Columns.Clear();
+                    gvdtl.DataSource = dt;
+                    lbmessage.Text = "";
+                } 
                 MessageBox.Show(ex.Message, $"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -237,8 +240,10 @@ namespace ColorFormulaSearchTool.UI
         {
             var colorantpriceFrm = new ColorantPriceFrm{ StartPosition = FormStartPosition.CenterScreen };
             colorantpriceFrm.ColorantPriceList = _colorantprice;
+            colorantpriceFrm.OnInitialize();
             colorantpriceFrm.ShowDialog();
             //返回后将要获取最新‘色母单价’记录
+            if(colorantpriceFrm.Newcolorantpricelist==null || colorantpriceFrm.Newcolorantpricelist.Rows.Count==0) return;
             _colorantprice = colorantpriceFrm.Newcolorantpricelist.Copy();
         }
 

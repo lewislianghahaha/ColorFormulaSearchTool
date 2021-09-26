@@ -48,7 +48,8 @@ namespace ColorFormulaSearchTool.UI
         {
             InitializeComponent();
             OnRegisterEvents();
-            OnInitialize();
+            //初始化查询下拉列表
+            OnShowSelectList();
         }
 
         private void OnRegisterEvents()
@@ -70,12 +71,10 @@ namespace ColorFormulaSearchTool.UI
         /// <summary>
         /// 初始化相关设置
         /// </summary>
-        private void OnInitialize()
+        public void OnInitialize()
         {
             //初始化‘色母单价’列表
             OnSearch(_colorantpricelist);
-            //初始化查询下拉列表
-            OnShowSelectList();
         }
 
         /// <summary>
@@ -106,6 +105,8 @@ namespace ColorFormulaSearchTool.UI
             {
                 gvdtl.DataSource = sourcedt.Clone();
                 panel1.Visible = false;
+                //当没有记录时,只需获取临时表的结构
+                _dtl = sourcedt.Clone();  
             }
             //控制GridView单元格显示方式
             ControlGridViewisShow();
@@ -182,11 +183,15 @@ namespace ColorFormulaSearchTool.UI
                 {
                     MessageBox.Show($"导入成功,按确定后进行刷新操作.",$"成功",MessageBoxButtons.OK,MessageBoxIcon.Information);
                     _typeid = 1;
+                    //导入完成后清空文本框记录
+                    txtbrandname.Text = "";
+                    //返回刷新方法
                     OnSearch(taskLogic.ResultTable);
                 }
             }
             catch (Exception ex)
             {
+
                 var dt = (DataTable)gvdtl.DataSource;
                 dt.Rows.Clear();
                 dt.Columns.Clear();
@@ -205,7 +210,7 @@ namespace ColorFormulaSearchTool.UI
             try
             {
                 //获取各变量相关值
-                taskLogic.Bname=txtbrandname.Text;//品牌
+                taskLogic.Bname = txtbrandname.Text;                    //品牌
                 taskLogic.Startdt = dtstd.Value.ToString("yyyy-MM-dd"); //开始日期
                 taskLogic.Enddt = dtend.Value.ToString("yyyy-MM-dd");   //结束日期
 
@@ -245,6 +250,14 @@ namespace ColorFormulaSearchTool.UI
             //注:当没有值时,若还设置某一行Row不显示的话,就会出现异常
             if (gvdtl?.Rows.Count >= 0)
                 gvdtl.Columns[0].Visible = false;
+            //修改GridView各列字段显示名称
+            if (gvdtl != null)
+            {
+                gvdtl.Columns[1].HeaderText = $"色母编码";
+                gvdtl.Columns[2].HeaderText = $"色母单价";
+                gvdtl.Columns[3].HeaderText = $"创建日期";
+                gvdtl.Columns[4].HeaderText = $"修改日期";
+            }
         }
 
         #region 子线程调用

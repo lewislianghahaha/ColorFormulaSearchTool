@@ -30,7 +30,7 @@ namespace ColorFormulaSearchTool.Task
                 sheetcount = sourcedt.Rows.Count % 1000000 == 0 ? sourcedt.Rows.Count / 1000000 : sourcedt.Rows.Count / 1000000 + 1;
 
                 //i为EXCEL的Sheet页数ID
-                for (var i = 0; i <= sheetcount; i++)
+                for (var i = 1; i <= sheetcount; i++)
                 {
                     //创建sheet页
                     var sheet = xssfWorkbook.CreateSheet("Sheet" + i);
@@ -96,7 +96,7 @@ namespace ColorFormulaSearchTool.Task
                 xssfWorkbook.Close();   //关闭工作簿
                 file.Dispose();         //释放文件流
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result = false;
             }

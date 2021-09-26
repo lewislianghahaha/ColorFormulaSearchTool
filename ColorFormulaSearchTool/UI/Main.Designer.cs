@@ -151,7 +151,7 @@
             // lbmessage
             // 
             this.lbmessage.AutoSize = true;
-            this.lbmessage.Location = new System.Drawing.Point(15, 9);
+            this.lbmessage.Location = new System.Drawing.Point(8, 9);
             this.lbmessage.Name = "lbmessage";
             this.lbmessage.Size = new System.Drawing.Size(0, 12);
             this.lbmessage.TabIndex = 0;

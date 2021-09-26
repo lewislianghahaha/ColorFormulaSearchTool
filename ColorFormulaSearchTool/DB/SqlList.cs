@@ -158,20 +158,20 @@ namespace ColorFormulaSearchTool.DB
             //色母单价窗体查询时使用
             if (typeid == 0)
             {
-                _result = $@" SELECT A.Pid,A.ColorantCode 色母编码,A.Price 色母单价,A.CreateDate 创建日期,A.ChangeDate 修改日期
+                _result = $@" SELECT A.Pid,A.ColorantCode,A.Price,A.CreateDate,A.ChangeDate
                               FROM dbo.T_BD_ColorantPrice A
-                              WHERE (SUBSTRING(A.ColorCode,0,3)='{brandname}' or '{brandname}'='')  --品牌
-                              AND CONVERT(VARCHAR(100),A.CreateDate,23) >='{sdt}'
-                              AND CONVERT(VARCHAR(100),A.CreateDate,23) <='{edt}'
+                              WHERE (SUBSTRING(A.ColorantCode,1,3) LIKE '%{brandname}%' or '{brandname}'='')  --品牌
+                              AND CONVERT(VARCHAR(100),A.CreateDate,23) >=CONVERT(VARCHAR(100),'{sdt}',23)
+                              AND CONVERT(VARCHAR(100),A.CreateDate,23) <=CONVERT(VARCHAR(100),'{edt}',23)
                             ";
             }
             else if (typeid == 1)
             {
-                _result = $@" SELECT A.Pid,A.ColorantCode 色母编码,A.Price 色母单价,A.CreateDate 创建日期,A.ChangeDate 修改日期
+                _result = $@" SELECT A.Pid,A.ColorantCode,A.Price,A.CreateDate,A.ChangeDate
                               FROM dbo.T_BD_ColorantPrice A
-                              WHERE (SUBSTRING(A.ColorCode,0,3)='{brandname}' or '{brandname}'='')  --品牌
-                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) >='{sdt}'
-                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) <='{edt}'
+                              WHERE (SUBSTRING(A.ColorantCode,1,3) LIKE '%{brandname}%' or '{brandname}'='')  --品牌
+                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) >=CONVERT(VARCHAR(100),'{sdt}',23)
+                              AND CONVERT(VARCHAR(100),A.ChangeDate,23) <=CONVERT(VARCHAR(100),'{edt}',23)
                             ";
             }
             //初始化及更新(插入)后使用

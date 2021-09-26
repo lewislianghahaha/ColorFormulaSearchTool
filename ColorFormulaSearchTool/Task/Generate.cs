@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using ColorFormulaSearchTool.DB;
 
 namespace ColorFormulaSearchTool.Task
@@ -21,17 +22,14 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         public DataTable GenerateColorcodeClickPoint(DataTable sourcedt)
         {
-            var a = sourcedt;
-            var dt = tempDt.ExportDt(0);
+            var dt = tempDt.ExportDt(0).Clone();
             //批量数据移植
             for (var i = 0; i < sourcedt.Rows.Count; i++)
             {
-               
                 var newrow = dt.NewRow();
                 for (var j = 0; j < sourcedt.Columns.Count; j++)
                 {
-                    var a1 = sourcedt.Rows[i][j];
-                    dt.Rows[i][j] = sourcedt.Rows[i][j];
+                    newrow[j] = sourcedt.Rows[i][j];
                 }
                 dt.Rows.Add(newrow);
             }
@@ -170,42 +168,11 @@ namespace ColorFormulaSearchTool.Task
                 //根据EXCEL地址获取相关EXCEL内容
                 var exceltemp = import.ImportExcelToDt(1, fileAdd).Copy();
                 //获取‘色母单价’模板(插入及更新使用)
-                var inserttemp = tempDt.ColorantPriceInsertTempDt();
-                var uptemp = tempDt.ColorantPriceUpTempDt();
+                var inserttemp = tempDt.ColorantPriceInsertOrUpTempDt();
+                var uptemp = tempDt.ColorantPriceInsertOrUpTempDt();
 
-                //使用colorantPriceList数据表进行查找,若有记录,就进行更新,没有就进行插入
-                foreach (DataRow rows in exceltemp.Rows)
-                {
-                    var dtrows = colorantPriceList.Select("ColorantCode='" + rows[0]+"'");
-                    //若dtrows有值,就执行更新,反之,执行插入
-                    if (dtrows.Length > 0)
-                    {
-                        for (var i = 0; i < dtrows.Length; i++)
-                        {
-                            var newrow = uptemp.NewRow();
-                            newrow[0] = dtrows[i][0];      //Pid
-                            newrow[1] = dtrows[i][1];      //ColorCode
-                            newrow[2] = rows[1];           //Price
-                            newrow[3] = dtrows[i][3];      //CreateDate
-                            newrow[4] = DateTime.Now;      //ChangeDate
-                            uptemp.Rows.Add(newrow);
-                        }
-                    }
-                    else
-                    {
-                        var newrow = inserttemp.NewRow();
-                        newrow[0] = rows[0];                           //ColorCode
-                        newrow[1] = rows[1];                           //Price
-                        newrow[2] = DateTime.Now;                      //CreateDate
-                        newrow[3] = Convert.ToDateTime(DBNull.Value);  //ChangeDate
-                        inserttemp.Rows.Add(newrow);
-                    }
-                }
-                //最后将得出的结果进行插入或更新
-                if (inserttemp.Rows.Count > 0)
-                    ImportDtToDb("T_BD_ColorantPrice", inserttemp);
-                if(uptemp.Rows.Count>0)
-                    UpDbFromDt("T_BD_ColorantPrice", uptemp);
+                //判断colorantPriceList有没有记录,若没有即直接插入
+                InsertOrUpRecordToDt(colorantPriceList.Rows.Count == 0 ? 0 : 1, exceltemp, colorantPriceList, inserttemp,uptemp);
                 //最后重新读取T_BD_ColorantPrice获取最新的记录集,并赋值至dt内
                 dt = search.SearchColorantPriceList().Copy();
             }
@@ -218,13 +185,75 @@ namespace ColorFormulaSearchTool.Task
         }
 
         /// <summary>
+        /// 通过条件判断是不是需要插入,或更新
+        /// </summary>
+        /// <param name="typeid">0:当colorantPriceList没有数据时使用 1:colorantPriceList有值时使用</param>
+        /// <param name="exceltemp">EXCEL导入数据</param>
+        /// <param name="colorantPriceList">色母单价数据集</param>
+        /// <param name="inserttemp">插入临时表</param>
+        /// <param name="uptemp">更新临时表</param>
+        private void InsertOrUpRecordToDt(int typeid,DataTable exceltemp,DataTable colorantPriceList,DataTable inserttemp,DataTable uptemp)
+        {
+            if (typeid == 0)
+            {
+                foreach (DataRow rows in exceltemp.Rows)
+                {
+                    var newrow = inserttemp.NewRow();
+                    newrow[1] = rows[0];              //ColorantCode
+                    newrow[2] = rows[1];             //Price
+                    newrow[3] = DateTime.Now;       //CreateDate
+                    newrow[4] = DBNull.Value;      //ChangeDate
+                    inserttemp.Rows.Add(newrow);
+                }
+            }
+            else
+            {
+                //使用colorantPriceList数据表进行查找,若有记录,就进行更新,没有就进行插入
+                foreach (DataRow rows in exceltemp.Rows)
+                {
+                    var dtrows = colorantPriceList.Select("ColorantCode='" + rows[0] + "'");
+                    //若dtrows有值,就执行更新,反之,执行插入
+                    if (dtrows.Length > 0)
+                    {
+                        for (var i = 0; i < dtrows.Length; i++)
+                        {
+                            var newrow = uptemp.NewRow();
+                            newrow[0] = dtrows[i][0];      //Pid
+                            newrow[1] = dtrows[i][1];      //ColorantCode
+                            newrow[2] = rows[1];           //Price
+                            newrow[3] = dtrows[i][3];      //CreateDate
+                            newrow[4] = DateTime.Now;      //ChangeDate
+                            uptemp.Rows.Add(newrow);
+                        }
+                    }
+                    else
+                    {
+                        var newrow = inserttemp.NewRow();
+                        newrow[1] = rows[0];              //ColorCode
+                        newrow[2] = rows[1];             //Price
+                        newrow[3] = DateTime.Now;       //CreateDate
+                        newrow[4] = DBNull.Value;      //ChangeDate
+                        inserttemp.Rows.Add(newrow);
+                    }
+                }
+            }
+
+            //最后将得出的结果进行插入或更新
+            if (inserttemp.Rows.Count > 0)
+                ImportDtToDb("T_BD_ColorantPrice", inserttemp);
+            if (uptemp.Rows.Count > 0)
+                UpDbFromDt("T_BD_ColorantPrice", uptemp);
+        }
+
+        /// <summary>
         /// 针对指定表进行数据插入
         /// </summary>
         /// <param name="tableName"></param>
         /// <param name="dt"></param>
         private void ImportDtToDb(string tableName, DataTable dt)
         {
-            //注:1)要插入的DataTable内的字段数据类型必须要与数据库内的一致;并且要按数据表内的字段顺序 2)SqlBulkCopy类只提供将数据写入到数据库内
+            //注:1)要插入的DataTable内的字段数据类型必须要与数据库内的一致(注:那怕此字段的值是自动生成(如:自增列),在运算过程中不需要插入值);并且要按数据表内的字段顺序 
+            //2)SqlBulkCopy类只提供将数据写入到数据库内
             using (var sqlBulkCopy = new SqlBulkCopy(conDb.GetConnString(0)))
             {
                 sqlBulkCopy.BatchSize = 1000;                    //表示以1000行 为一个批次进行插入

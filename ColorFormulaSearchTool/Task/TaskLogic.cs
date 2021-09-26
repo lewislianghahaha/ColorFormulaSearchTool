@@ -181,7 +181,7 @@ namespace ColorFormulaSearchTool.Task
                 _resultTable.Rows.Clear();
                 _resultTable.Columns.Clear();
             }
-            _resultTable = search.SearchColorantPrice(_brandname,_startdt,_enddt,_typeid).Copy();
+            _resultTable = search.SearchColorantPrice(_bname, _startdt,_enddt,_typeid).Copy();
         }
     }
 }

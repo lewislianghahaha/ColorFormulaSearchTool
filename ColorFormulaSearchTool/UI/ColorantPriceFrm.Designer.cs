@@ -376,7 +376,7 @@
             this.Controls.Add(this.Menu);
             this.MainMenuStrip = this.Menu;
             this.Name = "ColorantPriceFrm";
-            this.Text = "色母单价";
+            this.Text = "色母单价明细";
             this.Menu.ResumeLayout(false);
             this.Menu.PerformLayout();
             this.panel1.ResumeLayout(false);

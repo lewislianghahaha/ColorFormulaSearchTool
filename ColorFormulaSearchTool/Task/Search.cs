@@ -35,7 +35,7 @@ namespace ColorFormulaSearchTool.Task
         /// <returns></returns>
         public DataTable SearchColorantPriceList()
         {
-            _sqlscript = sqlList.Get_SearchColorantPrice(null,null,null,2);
+            _sqlscript = sqlList.Get_SearchColorantPrice("","","",2);
             return conDb.UseSqlSearchInfo(0, _sqlscript);
         }
 
