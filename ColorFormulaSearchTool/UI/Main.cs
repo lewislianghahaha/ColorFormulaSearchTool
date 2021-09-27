@@ -57,7 +57,7 @@ namespace ColorFormulaSearchTool.UI
         {
             //初始化‘色母单价’列表
             taskLogic.InitializeSearchColorantPrice();
-            _colorantprice = taskLogic.ResultTable;
+            _colorantprice = taskLogic.ResultTable.Copy();
         }
 
         /// <summary>
@@ -138,10 +138,16 @@ namespace ColorFormulaSearchTool.UI
                     new Thread(SearchColorCodeClick).Start();
                     load.StartPosition = FormStartPosition.CenterScreen;
                     load.ShowDialog();
-                    //显示查询条件信息
-                    lbmessage.Text = message;
-                    //跳转并进行显示
-                    OnSearch(taskLogic.ResultTable);
+
+                    if(taskLogic.ResultTable.Rows.Count==0) throw new Exception("查询异常,请联系管理员.");
+                    else
+                    {
+                        MessageBox.Show($"查询成功!请按确定键继续", $"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //显示查询条件信息
+                        lbmessage.Text = message;
+                        //跳转并进行显示
+                        OnSearch(taskLogic.ResultTable.Copy());
+                    }
                 }
             }
             catch (Exception ex)
@@ -159,6 +165,9 @@ namespace ColorFormulaSearchTool.UI
         {
             try
             {
+                //若查询条件信息存在,即先将其清空
+                if (lbmessage.Text != "") lbmessage.Text = "";
+
                 var openFileDialog = new OpenFileDialog { Filter = $"Xlsx文件|*.xlsx" };
                 if (openFileDialog.ShowDialog() != DialogResult.OK) return;
 
@@ -171,8 +180,13 @@ namespace ColorFormulaSearchTool.UI
                 load.StartPosition = FormStartPosition.CenterScreen;
                 load.ShowDialog();
 
-                //跳转并进行显示
-                OnSearch(taskLogic.ResultTable);
+                if (taskLogic.ResultTable.Rows.Count == 0) throw new Exception("查询异常,请联系管理员.");
+                else
+                {
+                    MessageBox.Show($"查询成功!请按确定键继续", $"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //跳转并进行显示
+                    OnSearch(taskLogic.ResultTable.Copy());
+                }
             }
             catch (Exception ex)
             {
@@ -197,7 +211,7 @@ namespace ColorFormulaSearchTool.UI
 
                 //相关参数赋值
                 taskLogic.FileAddress = fileAdd;
-                taskLogic.Exportdt = _dtl;
+                taskLogic.Exportdt = _dtl.Copy();
 
                 //子线程调用
                 new Thread(ExportReport).Start();

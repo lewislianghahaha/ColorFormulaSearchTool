@@ -283,7 +283,7 @@ namespace ColorFormulaSearchTool.Task
                 sqladpter.Fill(ds);
                 //建立更新模板相关信息(包括更新语句 以及 变量参数)
                 sqladpter = GetUpdateAdapter(tablename, conDb.GetConn(0), sqladpter);
-                //开始更新(注:通过对DataSet中存在的表进行循环赋值;并进行更新)
+                //开始更新(注:1)通过对DataSet中存在的表进行循环赋值;并进行更新 2)插入到ds的字段顺序要与dt的字段顺序一致)
                 for (var i = 0; i < dt.Rows.Count; i++)
                 {
                     for (var j = 0; j < dt.Columns.Count; j++)
